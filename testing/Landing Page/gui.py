@@ -1,7 +1,6 @@
 from pathlib import Path
 
 # from tkinter import *
-# Explicit imports to satisfy Flake8
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
 
@@ -88,3 +87,4 @@ button_3.place(
 )
 window.resizable(False, False)
 window.mainloop()
+

@@ -1,4 +1,7 @@
-#TkSolitaire, an embeddable and accessable solitaire game for Tkinter and Python 3
+from pathlib import Path
+
+from tkinter import *
+from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
 import json
 import os
@@ -21,6 +24,9 @@ DEFAULT_SETTINGS = {"movetype": "Drag",
                     "canvas_color": "#103b0a",
                     "larger_cards": "False"
                     }
+
+OUTPUT_PATH = Path(__file__).parent
+ASSETS_PATH = OUTPUT_PATH / Path(r"E:\College\2. Second Year\SEM 3\2. Labs\CS261\Project\Ace-Arena\testing\Landing Page\assets\frame0")
 
 
 class OptionBar(tk.Frame):
@@ -73,7 +79,9 @@ class OptionBar(tk.Frame):
 
 
 class HoverButton(tk.Button):
-    def __init__(self, parent, movetype="Click", alt=None, ttjustify="left", ttbackground="#ffffe0", ttforeground="black", ttrelief="solid", ttborderwidth=0, ttfont=("tahoma", "8", "normal"), ttlocationinvert=False, ttheightinvert=False, **kwargs):
+    def __init__(self, parent, movetype="Click", alt=None, ttjustify="left", ttbackground="#ffffe0",
+                 ttforeground="black", ttrelief="solid", ttborderwidth=0, ttfont=("tahoma", "8", "normal"),
+                 ttlocationinvert=False, ttheightinvert=False, **kwargs):
         self.command = kwargs.pop("command")
         self.clickedbackground = kwargs.pop("clickedbackground")
         tk.Label.__init__(self, parent, **kwargs)
@@ -224,12 +232,13 @@ class Stopwatch(tk.Label):
 
 
 class ToolTip:
-    def __init__(self, widget, justify, background, foreground, relief, borderwidth, font, locationinvert, heightinvert):
+    def __init__(self, widget, justify, background, foreground, relief, borderwidth, font, locationinvert,
+                 heightinvert):
         self.widget = widget
         self.tipwindow = None
         self.id = None
         self.x = self.y = 0
-        
+
         self.transition = 10
 
         self.justify = justify
@@ -250,7 +259,7 @@ class ToolTip:
         if not self.locationinvert:
             pos_x = pos_x + self.widget.winfo_rootx() + xoffset
         else:
-            pos_x = pos_x + self.widget.winfo_rootx() - xoffset*3
+            pos_x = pos_x + self.widget.winfo_rootx() - xoffset * 3
         if not self.heightinvert:
             pos_y = pos_y + cy + self.widget.winfo_rooty() + 40
         else:
@@ -258,10 +267,11 @@ class ToolTip:
         self.tipwindow = tw = tk.Toplevel(self.widget, bg="#2e2b2b")
         tw.wm_overrideredirect(1)
         tw.wm_geometry("+%d+%d" % (pos_x, pos_y))
-        label = tk.Label(tw, text="  "+self.text+"  ", justify=self.justify, background=self.background,
+        label = tk.Label(tw, text="  " + self.text + "  ", justify=self.justify, background=self.background,
                          foreground=self.foreground, relief=self.relief, borderwidth=self.borderwidth, font=self.font)
         label.pack(ipadx=1)
         tw.attributes("-alpha", 0)
+
         def fade_in():
             alpha = tw.attributes("-alpha")
             if alpha != 1:
@@ -270,8 +280,9 @@ class ToolTip:
                 tw.after(self.transition, fade_in)
             else:
                 tw.attributes("-alpha", 1)
+
         fade_in()
-    
+
     def hidetip(self):
         tw = self.tipwindow
         self.tipwindow = None
@@ -284,6 +295,7 @@ class ToolTip:
                     task = tw.after(self.transition, fade_away)
                 else:
                     tw.destroy()
+
             if not tw.attributes("-alpha") in [0, 1]:
                 tw.destroy()
             else:
@@ -401,7 +413,7 @@ class SolitareGameFrame(tk.Frame):
             else:
                 self.scaled_cards_prefix = ""
 
-        self.back_of_card_file = os.path.join("resources", self.scaled_cards_prefix+settings["card_back"]+".png")
+        self.back_of_card_file = os.path.join("resources", self.scaled_cards_prefix + settings["card_back"] + ".png")
         self.card_back = settings["card_back"]
 
         if self.gamemode[0] == "Custom":
@@ -442,25 +454,39 @@ class SolitareGameFrame(tk.Frame):
 
         self.header = header = OptionBar(self, invert=True, manager="grid")
         button_settings = {"movetype": self.movetype, "ttbackground": "#1c1c1b", "ttforeground": "white", "ttfont": (
-            "Verdana", "10", "normal"), "relief": "flat", "bg": "#1c1a1a", "activebackground": "#4f4a4a", "highlightbackground": "#1c1a1a", "clickedbackground": "#2e2b2b"}
+            "Verdana", "10", "normal"), "relief": "flat", "bg": "#1c1a1a", "activebackground": "#4f4a4a",
+                           "highlightbackground": "#1c1a1a", "clickedbackground": "#2e2b2b"}
         self.new_game_button = new_game_button = HoverButton(
-            header, alt="Start a new game (Ctrl+N)", command=self.new_game, image=self.convert_pictures("new_game.png", main=False), **button_settings)
+            header, alt="Start a new game (Ctrl+N)", command=self.new_game,
+            image=self.convert_pictures("new_game.png", main=False), **button_settings)
         self.restart_game_button = restart_game_button = HoverButton(
-            header, alt="Restart game (Ctrl+R)", command=self.restart_game, state="disabled", image=self.convert_pictures("restart_game.png", main=False), **button_settings)
-        self.deal_next_card_button = deal_next_card_button = HoverButton(header, alt="Deal next card (Ctrl+D)", command=lambda event="deal_card_button": self.stack_onclick(
-            event), image=self.convert_pictures("deal.png", main=False), **button_settings)
+            header, alt="Restart game (Ctrl+R)", command=self.restart_game, state="disabled",
+            image=self.convert_pictures("restart_game.png", main=False), **button_settings)
+        self.deal_next_card_button = deal_next_card_button = HoverButton(header, alt="Deal next card (Ctrl+D)",
+                                                                         command=lambda
+                                                                             event="deal_card_button": self.stack_onclick(
+                                                                             event),
+                                                                         image=self.convert_pictures("deal.png",
+                                                                                                     main=False),
+                                                                         **button_settings)
         self.undo_last_move_button = undo_last_move_button = HoverButton(
-            header, alt="Undo last Move (Ctrl+Z)", command=self.undo_move, state="disabled", image=self.convert_pictures("undo.png", main=False), **button_settings)
+            header, alt="Undo last Move (Ctrl+Z)", command=self.undo_move, state="disabled",
+            image=self.convert_pictures("undo.png", main=False), **button_settings)
         self.redo_last_move_button = redo_last_move_button = HoverButton(
-            header, alt="Redo last Move (Ctrl+Shift+Z)", command=self.redo_move, state="disabled", image=self.convert_pictures("redo.png", main=False), **button_settings)
+            header, alt="Redo last Move (Ctrl+Shift+Z)", command=self.redo_move, state="disabled",
+            image=self.convert_pictures("redo.png", main=False), **button_settings)
         self.hint_button = hint_button = HoverButton(
-            header, alt="Generate Hint (Ctrl+H)", command=self.generate_hint, image=self.convert_pictures("hint.png", main=False), **button_settings)
+            header, alt="Generate Hint (Ctrl+H)", command=self.generate_hint,
+            image=self.convert_pictures("hint.png", main=False), **button_settings)
         self.send_cards_up_button = send_cards_up_button = HoverButton(
-            header, alt="Send Cards to Aces (F5)", command=self.send_cards_up, image=self.convert_pictures("ol.png", main=False), **button_settings)
+            header, alt="Send Cards to Aces (F5)", command=self.send_cards_up,
+            image=self.convert_pictures("ol.png", main=False), **button_settings)
         self.settings_button = settings_button = HoverButton(
-            header, alt="Settings (F1)", command=self.open_settings, image=self.convert_pictures("settings.png", main=False), **button_settings)
-        self.fullscreen_button = fullscreen_button = HoverButton(header, alt="Fullscreen (F11)", command=self.fullscreen, image=self.convert_pictures(
-            "fullscreen.png", main=False), ttlocationinvert=True, **button_settings)
+            header, alt="Settings (F1)", command=self.open_settings,
+            image=self.convert_pictures("settings.png", main=False), **button_settings)
+        self.fullscreen_button = fullscreen_button = HoverButton(header, alt="Fullscreen (F11)",
+                                                                 command=self.fullscreen, image=self.convert_pictures(
+                "fullscreen.png", main=False), ttlocationinvert=True, **button_settings)
 
         header.columnconfigure(12, weight=1)
 
@@ -486,12 +512,20 @@ class SolitareGameFrame(tk.Frame):
         fullscreen_button.grid(row=1, column=12, padx=16, pady=1, sticky="e")
 
         self.headerless_settings_button = headerless_settings_button = HoverButton(self.canvas, movetype=self.movetype,
-                                                                                   alt="Settings", ttheightinvert=True, ttbackground="#1c1c1b",
-                                                                                   ttforeground="white", ttfont=("Verdana", "10", "normal"),
-                                                                                   bg=self.canvas["bg"], activebackground=self.generate_altered_colour(
+                                                                                   alt="Settings", ttheightinvert=True,
+                                                                                   ttbackground="#1c1c1b",
+                                                                                   ttforeground="white",
+                                                                                   ttfont=("Verdana", "10", "normal"),
+                                                                                   bg=self.canvas["bg"],
+                                                                                   activebackground=self.generate_altered_colour(
                                                                                        self.canvas["bg"]),
-                                                                                   highlightbackground="#103b0a", clickedbackground=self.generate_altered_colour(self.canvas["bg"]), command=self.open_settings,
-                                                                                   relief="flat", image=self.convert_pictures("settings.png", main=False))
+                                                                                   highlightbackground="#103b0a",
+                                                                                   clickedbackground=self.generate_altered_colour(
+                                                                                       self.canvas["bg"]),
+                                                                                   command=self.open_settings,
+                                                                                   relief="flat",
+                                                                                   image=self.convert_pictures(
+                                                                                       "settings.png", main=False))
 
         if self.show_header:
             header.grid(row=0, column=0, columnspan=100, sticky="ew")
@@ -506,13 +540,13 @@ class SolitareGameFrame(tk.Frame):
         self.stopwatch = stopwatch = Stopwatch(
             footer, fg="white", bg="#1c1a1a")
         if self.total_redeals != "unlimited":
-            self.redeal_label = tk.Label(footer, text="Redeals left: "+str(
+            self.redeal_label = tk.Label(footer, text="Redeals left: " + str(
                 max(0, self.total_redeals + self.redeals_left - 1)), fg="white", bg="#1c1a1a")
         else:
             self.redeal_label = tk.Label(
                 footer, text="", fg="white", bg="#1c1a1a")
         self.stock_label = tk.Label(
-            footer, text="Stock left: "+str(self.stock_left), fg="white", bg="#1c1a1a")
+            footer, text="Stock left: " + str(self.stock_left), fg="white", bg="#1c1a1a")
 
         if self.show_footer:
             footer.grid(row=2, column=0, sticky="ew")
@@ -525,7 +559,7 @@ class SolitareGameFrame(tk.Frame):
         if self.move_flag:
             return
         self.settings = settings = Settings(self)
-        #settings.grab_set()
+        # settings.grab_set()
         settings.bind("<<SettingsClose>>", self.continue_settings)
 
     def fullscreen(self, event=None):
@@ -609,13 +643,13 @@ class SolitareGameFrame(tk.Frame):
         else:
             self.footer.grid_forget()
         self.points_label["text"] = (
-            "Points: "+str((self.cards_on_ace*self.point_increment)+self.starting_points))
+                "Points: " + str((self.cards_on_ace * self.point_increment) + self.starting_points))
         self.points_label.pack(side="right", padx=6, pady=4)
         if self.show_stopwatch:
             self.stopwatch.pack(side="right", padx=6, pady=4)
         if self.total_redeals != "unlimited":
             self.redeal_label.config(
-                text="Redeals left: "+str(max(0, self.total_redeals + self.redeals_left - 1)))
+                text="Redeals left: " + str(max(0, self.total_redeals + self.redeals_left - 1)))
             if self.game_started:
                 self.redeal_label.pack(side="left", padx=6, pady=4)
         if self.game_started:
@@ -639,7 +673,7 @@ class SolitareGameFrame(tk.Frame):
         if self.movetype != previous_movetype:
             for card in self.canvas.find_withtag("face_up"):
                 card_tag = self.canvas.gettags(card)[0]
-                self.canvas.tag_unbind(card_tag,  "<Button-1>")
+                self.canvas.tag_unbind(card_tag, "<Button-1>")
                 self.canvas.tag_unbind(card_tag, "<Button1-Motion>")
                 self.canvas.tag_unbind(card_tag, "<ButtonRelease-1>")
                 self.canvas.tag_unbind(card_tag, "<Enter>")
@@ -757,39 +791,43 @@ class SolitareGameFrame(tk.Frame):
                 self.deal_next_card_button.change_command(
                     lambda event="deal_card_button": self.stack_onclick(event))
         self.compare_cardset(previous_larger_cards)
-        
+
     def compare_cardset(self, previous_larger_cards):
         if not os.path.isdir("resources/scaled_cards"):
-                self.create_scaled_images()
+            self.create_scaled_images()
         if not previous_larger_cards and self.larger_cards:
             self.larger_cards_pending = self.larger_cards
             self.larger_cards = previous_larger_cards
             restart_game = messagebox.askquestion(
-                "Restart game", "In order to use the larger card set, you must restart your game. Do you want to restart now?", icon="warning")
+                "Restart game",
+                "In order to use the larger card set, you must restart your game. Do you want to restart now?",
+                icon="warning")
             if restart_game == "yes":
                 self.restart_game()
         elif previous_larger_cards and not self.larger_cards:
             self.larger_cards_pending = self.larger_cards
             self.larger_cards = previous_larger_cards
             restart_game = messagebox.askquestion(
-                "Restart game", "In order to use the regular card set, you must restart your game. Do you want to restart now?", icon="warning")
+                "Restart game",
+                "In order to use the regular card set, you must restart your game. Do you want to restart now?",
+                icon="warning")
             if restart_game == "yes":
                 self.restart_game()
-                
+
     def generate_altered_colour(self, color):
         rgb = list(self.hex_to_rgb(color))
         if rgb[0] > 200:
-            rgb[0] = round(((rgb[0]))*1/2)
+            rgb[0] = round(((rgb[0])) * 1 / 2)
         else:
-            rgb[0] = round(min(255, 10+rgb[0]*2))
+            rgb[0] = round(min(255, 10 + rgb[0] * 2))
         if rgb[1] > 130:
-            rgb[1] = round((rgb[1])*1/2)
+            rgb[1] = round((rgb[1]) * 1 / 2)
         else:
-            rgb[1] = round(min(255, 10+rgb[1]*2))
+            rgb[1] = round(min(255, 10 + rgb[1] * 2))
         if rgb[2] > 130:
-            rgb[2] = round((rgb[2])*1/2)
+            rgb[2] = round((rgb[2]) * 1 / 2)
         else:
-            rgb[2] = round(min(255, 10+rgb[2]*2))
+            rgb[2] = round(min(255, 10 + rgb[2] * 2))
         return self.rgb_to_hex(*rgb)
 
     def hex_to_rgb(self, color):
@@ -816,30 +854,29 @@ class SolitareGameFrame(tk.Frame):
                 name_of_image = os.path.join(
                     "resources", "scaled_cards", "{}_of_{}.png".format(rank, suit))
                 im = Image.open(name_of_old_image)
-                resized_img = im.resize((100,130), Image.ANTIALIAS)
+                resized_img = im.resize((100, 130), Image.ANTIALIAS)
                 resized_img.save(name_of_image, 'PNG', quality=90)
 
-        
         im = Image.open("resources/card_back.png")
-        resized_img = im.resize((100,130), Image.ANTIALIAS)
+        resized_img = im.resize((100, 130), Image.ANTIALIAS)
         resized_img.save("resources/scaled_card_back.png", 'PNG', quality=90)
         im = Image.open("resources/python_card_back.png")
-        resized_img = im.resize((100,130), Image.ANTIALIAS)
+        resized_img = im.resize((100, 130), Image.ANTIALIAS)
         resized_img.save("resources/scaled_python_card_back.png", 'PNG', quality=90)
         im = Image.open("resources/ace_of_clubs_slot.png")
-        resized_img = im.resize((100,130), Image.ANTIALIAS)
+        resized_img = im.resize((100, 130), Image.ANTIALIAS)
         resized_img.save("resources/scaled_ace_of_clubs_slot.png", 'PNG', quality=90)
         im = Image.open("resources/ace_of_spades_slot.png")
-        resized_img = im.resize((100,130), Image.ANTIALIAS)
+        resized_img = im.resize((100, 130), Image.ANTIALIAS)
         resized_img.save("resources/scaled_ace_of_spades_slot.png", 'PNG', quality=90)
         im = Image.open("resources/ace_of_hearts_slot.png")
-        resized_img = im.resize((100,130), Image.ANTIALIAS)
+        resized_img = im.resize((100, 130), Image.ANTIALIAS)
         resized_img.save("resources/scaled_ace_of_hearts_slot.png", 'PNG', quality=90)
         im = Image.open("resources/ace_of_diamonds_slot.png")
-        resized_img = im.resize((100,130), Image.ANTIALIAS)
+        resized_img = im.resize((100, 130), Image.ANTIALIAS)
         resized_img.save("resources/scaled_ace_of_diamonds_slot.png", 'PNG', quality=90)
         im = Image.open("resources/empty_slot.png")
-        resized_img = im.resize((100,130), Image.ANTIALIAS)
+        resized_img = im.resize((100, 130), Image.ANTIALIAS)
         resized_img.save("resources/scaled_empty_slot.png", 'PNG', quality=90)
 
     def load_images(self):
@@ -848,7 +885,7 @@ class SolitareGameFrame(tk.Frame):
             card_dir = "scaled_cards"
             if not os.path.isdir("resources/scaled_cards"):
                 self.create_scaled_images()
-            
+
         suits = ["clubs", "diamonds", "spades", "hearts"]
         ranks = ["ace", "2", "3", "4", "5", "6", "7",
                  "8", "9", "10", "jack", "queen", "king"]
@@ -873,19 +910,19 @@ class SolitareGameFrame(tk.Frame):
 
         for i in range(rows):
             for e in range(column):
-                self.draw_down_cards((i+1), (e+1))
+                self.draw_down_cards((i + 1), (e + 1))
             column += 1
-            self.draw_up_cards((i+1), (column))
+            self.draw_up_cards((i + 1), (column))
 
     def draw_up_cards(self, row, col):
         card_tag = str(self.cards[self.card_drawing_count])
         card_image = self.dict_of_cards[self.cards[self.card_drawing_count]]
         if self.larger_cards:
             self.canvas.create_image(
-                165+row*130, col*20, image=card_image, tag=(card_tag, "face_up"), anchor=tk.NW)
+                165 + row * 130, col * 20, image=card_image, tag=(card_tag, "face_up"), anchor=tk.NW)
         else:
             self.canvas.create_image(
-                195+row*110, col*20, image=card_image, tag=(card_tag, "face_up"), anchor=tk.NW)
+                195 + row * 110, col * 20, image=card_image, tag=(card_tag, "face_up"), anchor=tk.NW)
         if self.movetype == "Accessability Mode":
             self.canvas.tag_bind(card_tag, "<Enter>", self.enter_card)
             self.canvas.tag_bind(card_tag, "<Leave>", self.leave_hover)
@@ -903,21 +940,21 @@ class SolitareGameFrame(tk.Frame):
 
     def draw_down_cards(self, row, col):
         card_tag = str(self.cards[self.card_drawing_count])
-        self.canvas.tag_unbind(card_tag,  "<Button-1>")
+        self.canvas.tag_unbind(card_tag, "<Button-1>")
         self.canvas.tag_unbind(card_tag, "<Button1-Motion>")
         self.canvas.tag_unbind(card_tag, "<ButtonRelease-1>")
         self.canvas.tag_unbind(card_tag, "<Enter>")
         self.canvas.tag_unbind(card_tag, "<Leave>")
         if self.larger_cards:
             self.canvas.create_image(
-                165+row*130, col*20, image=self.back_of_card, tag=(card_tag, "face_down"), anchor=tk.NW)
+                165 + row * 130, col * 20, image=self.back_of_card, tag=(card_tag, "face_down"), anchor=tk.NW)
         else:
             self.canvas.create_image(
-                195+row*110, col*20, image=self.back_of_card, tag=(card_tag, "face_down"), anchor=tk.NW)
+                195 + row * 110, col * 20, image=self.back_of_card, tag=(card_tag, "face_down"), anchor=tk.NW)
         self.card_drawing_count += 1
 
     def draw_remaining_cards(self):
-        remaining_cards = 52-self.card_drawing_count
+        remaining_cards = 52 - self.card_drawing_count
         for i in range(remaining_cards):
             card_tag = str(self.cards[self.card_drawing_count])
             self.canvas.tag_unbind(card_tag, "<Enter>")
@@ -935,8 +972,10 @@ class SolitareGameFrame(tk.Frame):
             self.card_drawing_count += 1
 
     def create_round_rectangle(self, x1, y1, x2, y2, r=17, **kwargs):
-        points = (x1+r, y1, x1+r, y1, x2-r, y1, x2-r, y1, x2, y1, x2, y1+r, x2, y1+r, x2, y2-r, x2, y2-r, x2,
-                  y2, x2-r, y2, x2-r, y2, x1+r, y2, x1+r, y2, x1, y2, x1, y2-r, x1, y2-r, x1, y1+r, x1, y1+r, x1, y1)
+        points = (
+        x1 + r, y1, x1 + r, y1, x2 - r, y1, x2 - r, y1, x2, y1, x2, y1 + r, x2, y1 + r, x2, y2 - r, x2, y2 - r, x2,
+        y2, x2 - r, y2, x2 - r, y2, x1 + r, y2, x1 + r, y2, x1, y2, x1, y2 - r, x1, y2 - r, x1, y1 + r, x1, y1 + r, x1,
+        y1)
         return self.canvas.create_polygon(points, **kwargs, smooth=True)
 
     def convert_pictures(self, url, main=True):
@@ -946,11 +985,10 @@ class SolitareGameFrame(tk.Frame):
             self.canvas.images.append(picture)
         else:
             self.button_images.append(picture)
-        return picture                
-
+        return picture
 
     def self_configure(self, event, width=None):
-        #adjust locations of ace slots for desktops with taskbars on side of screen
+        # adjust locations of ace slots for desktops with taskbars on side of screen
         self.aces_adjusted = False
         if width:
             width_offset = width
@@ -973,7 +1011,7 @@ class SolitareGameFrame(tk.Frame):
                     for card in self.canvas.find_overlapping(*self.canvas.bbox(item)):
                         self.canvas.move(card, 60, 0)
                 self.aces_moved = False
-        
+
     def draw_card_slots(self):
         self.aces_moved = False
         self.canvas.images = list()
@@ -984,34 +1022,42 @@ class SolitareGameFrame(tk.Frame):
             positions_of_main_rects = [
                 (295, 20), (425, 20), (555, 20), (685, 20), (815, 20), (945, 20), (1075, 20)]
 
-        self.empty_slot = empty_slot = self.convert_pictures(self.scaled_cards_prefix+"empty_slot.png")
+        self.empty_slot = empty_slot = self.convert_pictures(self.scaled_cards_prefix + "empty_slot.png")
         for item in positions_of_main_rects:
             self.canvas.create_image(
                 *item, image=empty_slot, tag=("empty_slot"), anchor=tk.NW)
 
         if not self.larger_cards:
-            self.canvas.create_image(1170, 20, image=self.convert_pictures(self.scaled_cards_prefix+
-                "ace_of_spades_slot.png"), tag=("spades", "empty_ace_slot"), anchor=tk.NW)
-            self.canvas.create_image(1270, 20, image=self.convert_pictures(self.scaled_cards_prefix+
-                "ace_of_hearts_slot.png"), tag=("hearts", "empty_ace_slot"), anchor=tk.NW)
-            self.canvas.create_image(1170, 140, image=self.convert_pictures(self.scaled_cards_prefix+
-                "ace_of_clubs_slot.png"), tag=("clubs", "empty_ace_slot"), anchor=tk.NW)
-            self.canvas.create_image(1270, 140, image=self.convert_pictures(self.scaled_cards_prefix+
-                "ace_of_diamonds_slot.png"), tag=("diamonds", "empty_ace_slot"), anchor=tk.NW)
+            self.canvas.create_image(1170, 20, image=self.convert_pictures(self.scaled_cards_prefix +
+                                                                           "ace_of_spades_slot.png"),
+                                     tag=("spades", "empty_ace_slot"), anchor=tk.NW)
+            self.canvas.create_image(1270, 20, image=self.convert_pictures(self.scaled_cards_prefix +
+                                                                           "ace_of_hearts_slot.png"),
+                                     tag=("hearts", "empty_ace_slot"), anchor=tk.NW)
+            self.canvas.create_image(1170, 140, image=self.convert_pictures(self.scaled_cards_prefix +
+                                                                            "ace_of_clubs_slot.png"),
+                                     tag=("clubs", "empty_ace_slot"), anchor=tk.NW)
+            self.canvas.create_image(1270, 140, image=self.convert_pictures(self.scaled_cards_prefix +
+                                                                            "ace_of_diamonds_slot.png"),
+                                     tag=("diamonds", "empty_ace_slot"), anchor=tk.NW)
 
             self.create_round_rectangle(
                 22, 22, 98, 118, width=2, fill="#124f09", outline="#207c12", tag="empty_cardstack_slot")
             self.create_round_rectangle(
                 122, 22, 198, 118, width=2, fill="#124f09", outline="#207c12", tag="empty_cardstack_slotb")
         else:
-            self.canvas.create_image(1250, 20, image=self.convert_pictures(self.scaled_cards_prefix+
-                "ace_of_spades_slot.png"), tag=("spades", "empty_ace_slot"), anchor=tk.NW)
-            self.canvas.create_image(1250, 170, image=self.convert_pictures(self.scaled_cards_prefix+
-                "ace_of_hearts_slot.png"), tag=("hearts", "empty_ace_slot"), anchor=tk.NW)
-            self.canvas.create_image(1250, 320, image=self.convert_pictures(self.scaled_cards_prefix+
-                "ace_of_clubs_slot.png"), tag=("clubs", "empty_ace_slot"), anchor=tk.NW)
-            self.canvas.create_image(1250, 470, image=self.convert_pictures(self.scaled_cards_prefix+
-                "ace_of_diamonds_slot.png"), tag=("diamonds", "empty_ace_slot"), anchor=tk.NW)
+            self.canvas.create_image(1250, 20, image=self.convert_pictures(self.scaled_cards_prefix +
+                                                                           "ace_of_spades_slot.png"),
+                                     tag=("spades", "empty_ace_slot"), anchor=tk.NW)
+            self.canvas.create_image(1250, 170, image=self.convert_pictures(self.scaled_cards_prefix +
+                                                                            "ace_of_hearts_slot.png"),
+                                     tag=("hearts", "empty_ace_slot"), anchor=tk.NW)
+            self.canvas.create_image(1250, 320, image=self.convert_pictures(self.scaled_cards_prefix +
+                                                                            "ace_of_clubs_slot.png"),
+                                     tag=("clubs", "empty_ace_slot"), anchor=tk.NW)
+            self.canvas.create_image(1250, 470, image=self.convert_pictures(self.scaled_cards_prefix +
+                                                                            "ace_of_diamonds_slot.png"),
+                                     tag=("diamonds", "empty_ace_slot"), anchor=tk.NW)
 
             self.create_round_rectangle(
                 22, 22, 118, 148, width=3, fill="#124f09", outline="#207c12", tag="empty_cardstack_slot")
@@ -1058,10 +1104,8 @@ class SolitareGameFrame(tk.Frame):
         if self_width != 1:
             self.self_configure(event=None, width=self_width)
 
-        
-
     def on_background(self, event):
-        if (self.canvas.find_overlapping(event.x-5, event.y-5, event.x+5, event.y+5)) == ():
+        if (self.canvas.find_overlapping(event.x - 5, event.y - 5, event.x + 5, event.y + 5)) == ():
             self.canvas.delete("rect")
             self.last_active_card = ""
             self.card_stack_list = ""
@@ -1071,7 +1115,7 @@ class SolitareGameFrame(tk.Frame):
             alpha = int(kwargs.pop("alpha") * 255)
             fill = kwargs.pop("fill")
             fill = self.winfo_rgb(fill) + (alpha,)
-            image = Image.new("RGBA", (x2-x1, y2-y1), fill)
+            image = Image.new("RGBA", (x2 - x1, y2 - y1), fill)
             self.rect_images.append(ImageTk.PhotoImage(image))
             self.canvas.create_image(
                 x1, y1, image=self.rect_images[-1], anchor="nw", tag=tag)
@@ -1106,10 +1150,10 @@ class SolitareGameFrame(tk.Frame):
 
     def enter_stack(self, event):
         self.job = self.after(
-            self.canvas_item_hover_time+800, lambda: self.stack_onclick(event="Accessability Mode"))
+            self.canvas_item_hover_time + 800, lambda: self.stack_onclick(event="Accessability Mode"))
 
     def enter_refill(self, event):
-        self.job = self.after(self.canvas_item_hover_time+800,
+        self.job = self.after(self.canvas_item_hover_time + 800,
                               lambda: self.refill_card_stack(event="Accessability Mode"))
 
     def leave_hover(self, event):
@@ -1139,7 +1183,7 @@ class SolitareGameFrame(tk.Frame):
             else:
                 self.scaled_cards_prefix = ""
             self.back_of_card_file = os.path.dirname(os.path.abspath(
-                __file__))+"/resources/"+self.scaled_cards_prefix+self.card_back+".png"
+                __file__)) + "/resources/" + self.scaled_cards_prefix + self.card_back + ".png"
             self.dict_of_cards = {}
             card_dir = "cards"
             if self.larger_cards:
@@ -1148,12 +1192,12 @@ class SolitareGameFrame(tk.Frame):
                     self.create_scaled_images()
 
             for card in self.cards:
-                    name_of_image = os.path.join(
-                        "resources", card_dir, "{}.png".format(card))
-                    image = Image.open(os.path.dirname(
-                        os.path.abspath(__file__))+"/"+name_of_image)
-                    self.dict_of_cards[card] = (
-                        ImageTk.PhotoImage(image))
+                name_of_image = os.path.join(
+                    "resources", card_dir, "{}.png".format(card))
+                image = Image.open(os.path.dirname(
+                    os.path.abspath(__file__)) + "/" + name_of_image)
+                self.dict_of_cards[card] = (
+                    ImageTk.PhotoImage(image))
             back_of_card = Image.open(self.back_of_card_file)
             self.back_of_card = (ImageTk.PhotoImage(back_of_card))
 
@@ -1161,7 +1205,7 @@ class SolitareGameFrame(tk.Frame):
 
         if self.continuous_points:
             self.starting_points = (
-                self.starting_points + (self.cards_on_ace * self.point_increment)) - 52
+                                           self.starting_points + (self.cards_on_ace * self.point_increment)) - 52
 
         self.cards_on_ace = 0
         self.card_moved_to_ace_by_sender = 0
@@ -1189,9 +1233,9 @@ class SolitareGameFrame(tk.Frame):
         self.redo_last_move_button.disable()
         if self.total_redeals != "unlimited":
             self.redeal_label.config(
-                text="Redeals left: "+str(max(0, self.total_redeals + self.redeals_left - 1)))
-        self.points_label.config(text="Points: "+str(self.starting_points))
-        self.stock_label.config(text="Stock left: "+str(self.stock_left))
+                text="Redeals left: " + str(max(0, self.total_redeals + self.redeals_left - 1)))
+        self.points_label.config(text="Points: " + str(self.starting_points))
+        self.stock_label.config(text="Stock left: " + str(self.stock_left))
         self.deal_next_card_button.config(
             state="normal")
         self.deal_next_card_button.change_command(
@@ -1257,10 +1301,10 @@ class SolitareGameFrame(tk.Frame):
             self.canvas.delete("rect")
             card_stack = list(self.canvas.bbox(pair))
             if self.larger_cards:
-                card_stack[1] = (int(card_stack[1]))+129
+                card_stack[1] = (int(card_stack[1])) + 129
             else:
-                card_stack[1] = (int(card_stack[1]))+99
-            card_stack[3] = (int(card_stack[3]))+350
+                card_stack[1] = (int(card_stack[1])) + 99
+            card_stack[3] = (int(card_stack[3])) + 350
             card_stack = tuple(card_stack)
             card_stack = list(self.canvas.find_overlapping(*card_stack))
             for pairr in self.card_stack_list:
@@ -1273,12 +1317,12 @@ class SolitareGameFrame(tk.Frame):
             last_active_card_bbox_list = list(self.canvas.bbox(pair))
             if self.larger_cards:
                 last_active_card_bbox_list[1] = int(
-                    last_active_card_bbox_list[1])+90
+                    last_active_card_bbox_list[1]) + 90
             else:
                 last_active_card_bbox_list[1] = int(
-                    last_active_card_bbox_list[1])+60
+                    last_active_card_bbox_list[1]) + 60
             last_active_card_bbox_list[3] = int(
-                last_active_card_bbox_list[3])-25
+                last_active_card_bbox_list[3]) - 25
             last_active_card_bbox_list = tuple(last_active_card_bbox_list)
             card_a_bbox = self.canvas.bbox(pair)
 
@@ -1297,7 +1341,8 @@ class SolitareGameFrame(tk.Frame):
             positionsb.append(br)
             card_a_bbox = tuple(positionsb)
 
-            if ("empty_ace_slot" not in str(self.canvas.gettags(pair)) and "empty_slot" not in str(self.canvas.gettags(pair))):
+            if ("empty_ace_slot" not in str(self.canvas.gettags(pair)) and "empty_slot" not in str(
+                    self.canvas.gettags(pair))):
                 last_active_card = str(self.canvas.gettags(pair)).replace(")", "").replace(
                     "('", "").replace("', 'face_down'", "").replace("', 'face_up'", "")
             else:
@@ -1320,10 +1365,10 @@ class SolitareGameFrame(tk.Frame):
                 if ("empty_ace_slot" not in str(current_image_tags)) and ("empty_slot" not in str(current_image_tags)):
                     csl = list(self.canvas.bbox(tag_a))
                     if self.larger_cards:
-                        csl[1] = (int(csl[1]))+135
+                        csl[1] = (int(csl[1])) + 135
                     else:
-                        csl[1] = (int(csl[1]))+110
-                    csl[3] = (int(csl[3]))+20
+                        csl[1] = (int(csl[1])) + 110
+                    csl[3] = (int(csl[3])) + 20
                     csl = tuple(csl)
                     csl = list(self.canvas.find_overlapping(*csl))
                     for card in csl:
@@ -1374,7 +1419,7 @@ class SolitareGameFrame(tk.Frame):
                     last_card_index_in_below = below_last.index(
                         list(self.canvas.find_withtag(last_active_card))[0])
                     below_last = str(self.canvas.gettags(
-                        below_last[last_card_index_in_below-1]))
+                        below_last[last_card_index_in_below - 1]))
                     last_overlapping = self.canvas.find_overlapping(
                         *self.canvas.bbox(last_active_card))
                     if "king" in last_active_card:
@@ -1512,7 +1557,7 @@ class SolitareGameFrame(tk.Frame):
             last_card_index_in_below = below_last.index(
                 list(self.canvas.find_withtag(card))[0])
             below_last = str(self.canvas.gettags(
-                below_last[last_card_index_in_below-1]))
+                below_last[last_card_index_in_below - 1]))
             if "face_up" in self.canvas.gettags(below_last):
                 face_up_cards.remove(card)
         flipped_cards = []
@@ -1630,7 +1675,7 @@ class SolitareGameFrame(tk.Frame):
             self.redeals_left += 1
             if self.total_redeals != "unlimited":
                 self.redeal_label.config(
-                    text="Redeals left: "+str(max(0, self.total_redeals + self.redeals_left - 1)))
+                    text="Redeals left: " + str(max(0, self.total_redeals + self.redeals_left - 1)))
             for card in reversed(list(self.canvas.find_overlapping(*self.canvas.bbox("empty_cardstack_slot")))):
                 current_item_tags = self.canvas.gettags(card)
                 tag_a = current_item_tags[0]
@@ -1665,7 +1710,7 @@ class SolitareGameFrame(tk.Frame):
                 self.canvas.itemconfig(
                     card, image=self.dict_of_cards[tag_a], tag=(tag_a, "face_up"))
                 self.stock_left -= 1
-            self.stock_label.config(text="Stock left: "+str(self.stock_left))
+            self.stock_label.config(text="Stock left: " + str(self.stock_left))
             self.undo_last_move_button.config(state="normal")
             self.restart_game_button.config(state="normal")
             self.redo_last_move_button.disable()
@@ -1673,7 +1718,7 @@ class SolitareGameFrame(tk.Frame):
         elif "stack_click_move" in last_move:
             self.canvas.delete("rect")
             self.stock_left += 1
-            self.stock_label.config(text="Stock left: "+str(self.stock_left))
+            self.stock_label.config(text="Stock left: " + str(self.stock_left))
             tag_a = last_move[0]
             if not self.larger_cards:
                 self.canvas.move(tag_a, -100, 0)
@@ -1715,19 +1760,19 @@ class SolitareGameFrame(tk.Frame):
                 for i in last_move[2]:
                     self.canvas.tag_raise(i)
                 self.points_label["text"] = (
-                    "Points: "+str((self.cards_on_ace*self.point_increment)+self.starting_points))
+                        "Points: " + str((self.cards_on_ace * self.point_increment) + self.starting_points))
             elif last_move[1] == 2:
                 self.cards_on_ace += 1
                 self.points_label["text"] = (
-                    "Points: "+str((self.cards_on_ace*self.point_increment)+self.starting_points))
+                        "Points: " + str((self.cards_on_ace * self.point_increment) + self.starting_points))
 
         elif "move_card_srv" in last_move:
             card_location = self.canvas.coords(last_move[3])
             current_image_location = last_move[-2]
-            
+
             if last_move[1]:
                 current_image_location = self.canvas.coords(last_move[1])
-                    
+
             xpos = int(current_image_location[0]) - int(card_location[0])
             ypos = (int(current_image_location[1]) - int(card_location[1]))
             self.canvas.move(last_move[3], xpos, ypos)
@@ -1736,11 +1781,11 @@ class SolitareGameFrame(tk.Frame):
             if last_move[2] == 1:
                 self.cards_on_ace -= 1
                 self.points_label["text"] = (
-                    "Points: "+str((self.cards_on_ace*self.point_increment)+self.starting_points))
+                        "Points: " + str((self.cards_on_ace * self.point_increment) + self.starting_points))
             elif last_move[2] == 2:
                 self.cards_on_ace += 1
                 self.points_label["text"] = (
-                    "Points: "+str((self.cards_on_ace*self.point_increment)+self.starting_points))
+                        "Points: " + str((self.cards_on_ace * self.point_increment) + self.starting_points))
         self.canvas.tag_raise("face_up")
         self.restart_game_button.config(state="normal")
         self.redo_last_move_button.config(state="normal")
@@ -1772,9 +1817,11 @@ class SolitareGameFrame(tk.Frame):
             if "hearts" in current_card and "hearts" not in last_card:
                 return False
         else:
-            if (("clubs" in current_card) or ("spades" in current_card)) and (("clubs" in last_card) or ("spades" in last_card)):
+            if (("clubs" in current_card) or ("spades" in current_card)) and (
+                    ("clubs" in last_card) or ("spades" in last_card)):
                 return False
-            elif (("diamonds" in current_card) or ("hearts" in current_card)) and (("diamonds" in last_card) or ("hearts" in last_card)):
+            elif (("diamonds" in current_card) or ("hearts" in current_card)) and (
+                    ("diamonds" in last_card) or ("hearts" in last_card)):
                 return False
         if "empty_ace_slot" in current_card:
             return True
@@ -1811,12 +1858,12 @@ class SolitareGameFrame(tk.Frame):
             current_card = int(current_card)
 
             if ace_slot:
-                if last_card-1 == current_card:
+                if last_card - 1 == current_card:
                     return True
                 else:
                     return False
             else:
-                if last_card+1 == current_card:
+                if last_card + 1 == current_card:
                     return True
                 else:
                     return False
@@ -1849,7 +1896,7 @@ class SolitareGameFrame(tk.Frame):
 
         self.canvas.delete("rect")
         self.stock_left -= 1
-        self.stock_label.config(text="Stock left: "+str(self.stock_left))
+        self.stock_label.config(text="Stock left: " + str(self.stock_left))
         self.last_active_card = ""
         self.card_stack_list = ""
 
@@ -1907,7 +1954,7 @@ class SolitareGameFrame(tk.Frame):
             self.redeals_left -= 1
             if self.total_redeals != "unlimited":
                 self.redeal_label.config(
-                    text="Redeals left: "+str(max(0, self.total_redeals + self.redeals_left - 1)))
+                    text="Redeals left: " + str(max(0, self.total_redeals + self.redeals_left - 1)))
 
             for card in reversed(list(self.canvas.find_overlapping(*self.canvas.bbox("empty_cardstack_slotb")))):
                 if "empty_cardstack_slotb" in self.canvas.gettags(card):
@@ -1937,7 +1984,7 @@ class SolitareGameFrame(tk.Frame):
             self.stock_left -= 1
             for i in (self.canvas.find_overlapping(*self.canvas.bbox("empty_cardstack_slot"))):
                 self.stock_left += 1
-            self.stock_label.config(text="Stock left: "+str(self.stock_left))
+            self.stock_label.config(text="Stock left: " + str(self.stock_left))
             self.undo_last_move_button.config(state="normal")
             self.restart_game_button.config(state="normal")
             self.redo_last_move_button.config(state="disabled")
@@ -1976,7 +2023,7 @@ class SolitareGameFrame(tk.Frame):
         if self.move_flag:
             new_xpos, new_ypos = event.x, event.y
             self.canvas.move("moveable", new_xpos -
-                             self.mouse_xpos, new_ypos-self.mouse_ypos)
+                             self.mouse_xpos, new_ypos - self.mouse_ypos)
 
             self.mouse_xpos = new_xpos
             self.mouse_ypos = new_ypos
@@ -2054,10 +2101,10 @@ class SolitareGameFrame(tk.Frame):
                     continue
                 else:
                     xpos = int(last_image_location[0]) - \
-                        int(self.canvas.coords(item)[0])
+                           int(self.canvas.coords(item)[0])
                     ypos = moving_count + \
-                        (int(last_image_location[1]) -
-                         int(self.canvas.coords(item)[1]))
+                           (int(last_image_location[1]) -
+                            int(self.canvas.coords(item)[1]))
 
                     self.canvas.move(item, xpos, ypos)
                     moving_count += 20
@@ -2093,10 +2140,10 @@ class SolitareGameFrame(tk.Frame):
                 if (not over_ace_slot) and ("empty_slot" not in str(current_image_tags)):
                     csl = list(self.canvas.bbox(tag_a))
                     if self.larger_cards:
-                        csl[1] = (int(csl[1]))+135
+                        csl[1] = (int(csl[1])) + 135
                     else:
-                        csl[1] = (int(csl[1]))+110
-                    csl[3] = (int(csl[3]))+20
+                        csl[1] = (int(csl[1])) + 110
+                    csl[3] = (int(csl[3])) + 20
                     csl = tuple(csl)
                     csl = list(self.canvas.find_overlapping(*csl))
                     for card in csl:
@@ -2133,11 +2180,12 @@ class SolitareGameFrame(tk.Frame):
                         pass
 
                 try:
-                    if str(list(current_image)[0]) == str(self.last_active_card_over[self.last_active_card_over.index(list(self.canvas.find_withtag(self.last_active_card))[0])-1]):
+                    if str(list(current_image)[0]) == str(self.last_active_card_over[self.last_active_card_over.index(
+                            list(self.canvas.find_withtag(self.last_active_card))[0]) - 1]):
                         overlapping = True
                 except (ValueError, IndexError):
                     pass
-                
+
                 if ("ace" not in self.last_active_card and "empty_ace_slot" in self.current_image_tags):
                     continue
                 elif ("king" not in self.last_active_card and "empty_slot" in self.current_image_tags):
@@ -2166,10 +2214,10 @@ class SolitareGameFrame(tk.Frame):
                     continue
                 else:
                     xpos = int(last_image_location[0]) - \
-                        int(self.canvas.coords(item)[0])
+                           int(self.canvas.coords(item)[0])
                     ypos = moving_count + \
-                        (int(last_image_location[1]) -
-                         int(self.canvas.coords(item)[1]))
+                           (int(last_image_location[1]) -
+                            int(self.canvas.coords(item)[1]))
 
                     self.canvas.move(item, xpos, ypos)
                     moving_count += 20
@@ -2202,10 +2250,10 @@ class SolitareGameFrame(tk.Frame):
         if (not over_ace_slot) and ("empty_slot" not in str(current_image_tags)):
             csl = list(self.canvas.bbox(current_image))
             if self.larger_cards:
-                csl[1] = (int(csl[1]))+135
+                csl[1] = (int(csl[1])) + 135
             else:
-                csl[1] = (int(csl[1]))+110
-            csl[3] = (int(csl[3]))+20
+                csl[1] = (int(csl[1])) + 110
+            csl[3] = (int(csl[3])) + 20
             csl = tuple(csl)
             csl = list(self.canvas.find_overlapping(*csl))
             for card in csl:
@@ -2282,10 +2330,10 @@ class SolitareGameFrame(tk.Frame):
             if ("empty_ace_slot" not in str(current_image_tags)) and ("empty_slot" not in str(current_image_tags)):
                 csl = list(self.canvas.bbox(tag_a))
                 if self.larger_cards:
-                    csl[1] = (int(csl[1]))+135
+                    csl[1] = (int(csl[1])) + 135
                 else:
-                    csl[1] = (int(csl[1]))+110
-                csl[3] = (int(csl[3]))+20
+                    csl[1] = (int(csl[1])) + 110
+                csl[3] = (int(csl[3])) + 20
                 csl = tuple(csl)
                 csl = list(self.canvas.find_overlapping(*csl))
                 for i in csl:
@@ -2359,7 +2407,8 @@ class SolitareGameFrame(tk.Frame):
 
         self.tag_a = current_image_tags[0]
 
-        if ("empty_ace_slot" not in self.current_image_tags and "empty_slot" not in self.current_image_tags) or pass_variable_updates:
+        if (
+                "empty_ace_slot" not in self.current_image_tags and "empty_slot" not in self.current_image_tags) or pass_variable_updates:
             self.card_stack_list = ""
             self.canvas.delete("rect")
             self.last_active_card = ""
@@ -2368,10 +2417,10 @@ class SolitareGameFrame(tk.Frame):
             self.card_stack_list = list(
                 self.canvas.bbox(self.last_active_card))
             if self.larger_cards:
-                self.card_stack_list[1] = (int(self.card_stack_list[1]))+129
+                self.card_stack_list[1] = (int(self.card_stack_list[1])) + 129
             else:
-                self.card_stack_list[1] = (int(self.card_stack_list[1]))+99
-            self.card_stack_list[3] = (int(self.card_stack_list[3]))+350
+                self.card_stack_list[1] = (int(self.card_stack_list[1])) + 99
+            self.card_stack_list[3] = (int(self.card_stack_list[3])) + 350
             self.card_stack_list = tuple(self.card_stack_list)
             self.card_stack_list = list(
                 self.canvas.find_overlapping(*self.card_stack_list))
@@ -2395,16 +2444,15 @@ class SolitareGameFrame(tk.Frame):
                 self.canvas.bbox(self.last_active_card))
             if self.larger_cards:
                 last_active_card_bbox_list[1] = int(
-                    last_active_card_bbox_list[1])+90
+                    last_active_card_bbox_list[1]) + 90
             else:
                 last_active_card_bbox_list[1] = int(
-                    last_active_card_bbox_list[1])+60
+                    last_active_card_bbox_list[1]) + 60
             last_active_card_bbox_list[3] = int(
-                last_active_card_bbox_list[3])-25
+                last_active_card_bbox_list[3]) - 25
             last_active_card_bbox_list = tuple(last_active_card_bbox_list)
             self.last_active_card_overlapping = self.canvas.find_overlapping(
                 *last_active_card_bbox_list)
-
 
             self.last_active_card_over = self.canvas.find_overlapping(
                 *self.canvas.bbox(self.last_active_card))
@@ -2454,7 +2502,7 @@ class SolitareGameFrame(tk.Frame):
 
     def enter_hover_on_rect(self, event):
         self.job = self.after(
-            self.canvas_item_hover_time+1000, lambda: self.click_on_rect(event=event))
+            self.canvas_item_hover_time + 1000, lambda: self.click_on_rect(event=event))
 
     def enter_hover_on_hint_rect(self, event):
         self.job = self.after(
@@ -2467,7 +2515,7 @@ class SolitareGameFrame(tk.Frame):
             return
         last_card_index_in_below = below_last.index(
             list(self.canvas.find_withtag("current"))[0])
-        below_last = (below_last[last_card_index_in_below-1])
+        below_last = (below_last[last_card_index_in_below - 1])
         if "empty_cardstack_slot" in self.canvas.gettags(below_last):
             self.refill_card_stack(event="hint")
         else:
@@ -2505,11 +2553,11 @@ class SolitareGameFrame(tk.Frame):
 
         for i in self.last_active_card_overlapping:
             tag_list.append(self.canvas.gettags(i))
-            
+
         if "empty_ace_slot" in str(tag_list):
             self.cards_on_ace -= 1
             self.points_label["text"] = (
-                "Points: "+str((self.cards_on_ace*self.point_increment)+self.starting_points))
+                    "Points: " + str((self.cards_on_ace * self.point_increment) + self.starting_points))
             new_card_on_ace = 2
             check = self.generate_drawing_count(ace_slot=ace_slot)
             if self.movetype == "Drag":
@@ -2528,9 +2576,9 @@ class SolitareGameFrame(tk.Frame):
         last_active_card_bbox_list = list(
             self.canvas.bbox(self.last_active_card))
         last_active_card_bbox_list[1] = int(
-            last_active_card_bbox_list[1])+60
+            last_active_card_bbox_list[1]) + 60
         last_active_card_bbox_list[3] = int(
-            last_active_card_bbox_list[3])-25
+            last_active_card_bbox_list[3]) - 25
         last_active_card_bbox_list = tuple(last_active_card_bbox_list)
 
         secondreturnval = False
@@ -2543,7 +2591,7 @@ class SolitareGameFrame(tk.Frame):
             elif "empty_cardstack_slotb" in self.canvas.gettags(self.canvas.find_withtag(i)):
                 secondreturnval = True
                 break
-            
+
         if secondreturnval:
             last_active_card = self.canvas.find_withtag(
                 self.last_active_card)
@@ -2552,8 +2600,8 @@ class SolitareGameFrame(tk.Frame):
             xpos = int(
                 self.current_image_location[0]) - int(last_active_card_coordinates[0])
             ypos = self.card_drawing_count + \
-                (int(self.current_image_location[1]) -
-                 int(last_active_card_coordinates[1]))
+                   (int(self.current_image_location[1]) -
+                    int(last_active_card_coordinates[1]))
             self.canvas.move(last_active_card, xpos, ypos)
             self.canvas.tag_raise(last_active_card)
             if event == "send_cards_to_ace":
@@ -2604,16 +2652,18 @@ class SolitareGameFrame(tk.Frame):
                     xpos = int(
                         self.current_image_location[0]) - int(card_location[0])
                     ypos = self.card_drawing_count + \
-                        (int(
-                            self.current_image_location[1]) - int(card_location[1]))
+                           (int(
+                               self.current_image_location[1]) - int(card_location[1]))
                     self.canvas.move(card, xpos, ypos)
                     self.canvas.tag_raise(card)
                     if event == "send_cards_to_ace":
                         self.canvas.tag_raise("cardsender_highlight")
                         self.card_moved_to_ace_by_sender += 1
                     self.card_drawing_count += 20
-                    moved_cards[str(self.canvas.gettags(self.canvas.find_withtag(card))).replace("('", "").replace("', 'face_down')", "").replace(
-                        "', 'face_up')", "").replace("', 'face_up', 'current')", "")] = self.last_active_card_coordinates[self.card_stack_list.index(card)]
+                    moved_cards[str(self.canvas.gettags(self.canvas.find_withtag(card))).replace("('", "").replace(
+                        "', 'face_down')", "").replace(
+                        "', 'face_up')", "").replace("', 'face_up', 'current')", "")] = \
+                    self.last_active_card_coordinates[self.card_stack_list.index(card)]
             history_to_add = ["move_card", new_card_on_ace, moved_cards,
                               self.card_drawing_count, flipped_cards, self.current_image]
         self.card_stack_list = ""
@@ -2660,7 +2710,7 @@ class SolitareGameFrame(tk.Frame):
         if ace_slot:
             self.cards_on_ace += 1
             self.points_label["text"] = (
-                "Points: "+str((self.cards_on_ace*self.point_increment)+self.starting_points))
+                    "Points: " + str((self.cards_on_ace * self.point_increment) + self.starting_points))
             self.card_drawing_count = 0
             new_card_on_ace = 1
             self.canvas_item_hover_time += 300
@@ -2680,9 +2730,9 @@ class CustomGameMaker(tk.Toplevel):
 
         try:
             self.settings = json.load(open(os.path.dirname(
-                os.path.abspath(__file__))+"/resources/settings.json"))
+                os.path.abspath(__file__)) + "/resources/settings.json"))
         except:
-            with open((os.path.dirname(os.path.abspath(__file__))+"/resources/settings.json"), "w") as handle:
+            with open((os.path.dirname(os.path.abspath(__file__)) + "/resources/settings.json"), "w") as handle:
                 handle.write(str(DEFAULT_SETTINGS).replace("'", '"'))
             self.settings = DEFAULT_SETTINGS
         self.custom_game = None
@@ -2706,23 +2756,34 @@ class CustomGameMaker(tk.Toplevel):
 
     def create_widgets(self):
         self.restart_game_button = tk.Checkbutton(
-            self, text="Enable restart game button", variable=self.restart_game_button_enabled, anchor="w", bg="#b0acac", activebackground="#706c6c")
+            self, text="Enable restart game button", variable=self.restart_game_button_enabled, anchor="w",
+            bg="#b0acac", activebackground="#706c6c")
         self.undo_button = tk.Checkbutton(self, text="Enable undo/redo button",
-                                          variable=self.undo_last_move_button_enabled, anchor="w", bg="#b0acac", activebackground="#706c6c")
+                                          variable=self.undo_last_move_button_enabled, anchor="w", bg="#b0acac",
+                                          activebackground="#706c6c")
         self.hint_button = tk.Checkbutton(
-            self, text="Enable hint button", variable=self.hint_button_enabled, anchor="w", bg="#b0acac", activebackground="#706c6c")
+            self, text="Enable hint button", variable=self.hint_button_enabled, anchor="w", bg="#b0acac",
+            activebackground="#706c6c")
         self.stopwatch_button = tk.Checkbutton(
-            self, text="Show stopwatch", variable=self.show_stopwatch, anchor="w", bg="#b0acac", activebackground="#706c6c")
-        self.starting_points_entry = tk.Spinbox(self, from_=-1000000, to=1000000, increment=5, width=30, textvariable=self.starting_points,
-                                                relief="flat",  highlightbackground="black", highlightthickness=1, bg="#cccaca", buttonbackground="#cccacc")
-        self.point_increment_entry = tk.Spinbox(self, from_=-1000000, to=1000000, increment=1, width=30, textvariable=self.point_increment,
-                                                relief="flat",  highlightbackground="black", highlightthickness=1, bg="#cccaca", buttonbackground="#cccacc")
+            self, text="Show stopwatch", variable=self.show_stopwatch, anchor="w", bg="#b0acac",
+            activebackground="#706c6c")
+        self.starting_points_entry = tk.Spinbox(self, from_=-1000000, to=1000000, increment=5, width=30,
+                                                textvariable=self.starting_points,
+                                                relief="flat", highlightbackground="black", highlightthickness=1,
+                                                bg="#cccaca", buttonbackground="#cccacc")
+        self.point_increment_entry = tk.Spinbox(self, from_=-1000000, to=1000000, increment=1, width=30,
+                                                textvariable=self.point_increment,
+                                                relief="flat", highlightbackground="black", highlightthickness=1,
+                                                bg="#cccaca", buttonbackground="#cccacc")
         self.infinite_redeals = tk.Checkbutton(
-            self, text="Infinite redeals", variable=self.unlimited_redeals, anchor="w", bg="#b0acac", activebackground="#706c6c")
+            self, text="Infinite redeals", variable=self.unlimited_redeals, anchor="w", bg="#b0acac",
+            activebackground="#706c6c")
         self.redeals_label = tk.Label(
             self, text="Total Redeals:", anchor="w", bg="#b0acac")
-        self.redeals_entry = tk.Spinbox(self, from_=1, to=1000000, increment=1, width=30, textvariable=self.total_redeals, relief="flat",  highlightbackground="black",
-                                        highlightthickness=1, bg="#cccaca", buttonbackground="#cccacc", disabledbackground="#cccaca", disabledforeground="grey")
+        self.redeals_entry = tk.Spinbox(self, from_=1, to=1000000, increment=1, width=30,
+                                        textvariable=self.total_redeals, relief="flat", highlightbackground="black",
+                                        highlightthickness=1, bg="#cccaca", buttonbackground="#cccacc",
+                                        disabledbackground="#cccaca", disabledforeground="grey")
 
         self.save_button = tk.Button(self, text="Save", relief="solid", borderwidth=1,
                                      command=self.save, bg="#b0acac", activebackground="#706c6c")
@@ -2831,9 +2892,9 @@ class CustomGameMaker(tk.Toplevel):
     def red_bg(self, widget):
         widget.config(bg="red")
         widget.bind("<Key>", lambda event,
-                    widget=widget: self.normal_bg(event, widget))
+                                    widget=widget: self.normal_bg(event, widget))
         widget.bind("<Button-1>", lambda event,
-                    widget=widget: self.normal_bg(event, widget))
+                                         widget=widget: self.normal_bg(event, widget))
 
     def normal_bg(self, event, widget):
         widget.config(bg="#cccaca")
@@ -2916,7 +2977,7 @@ class CustomGameMaker(tk.Toplevel):
         self.custom_game = custom_game
 
         self.settings["gamemode"] = custom_game
-        with open((os.path.dirname(os.path.abspath(__file__))+"/resources/settings.json"), "w") as handle:
+        with open((os.path.dirname(os.path.abspath(__file__)) + "/resources/settings.json"), "w") as handle:
             handle.write(str(self.settings).replace("'", '"'))
 
         self.destroy()
@@ -2945,7 +3006,8 @@ class CustomGameMaker(tk.Toplevel):
                 new_custom_game.append(0)
         if str(new_custom_game) not in str(self.settings):
             warning = messagebox.askyesnocancel(
-                "Save Game.", "You haven't saved this game. Do you want to save it?", parent=self, default="yes", icon='warning')
+                "Save Game.", "You haven't saved this game. Do you want to save it?", parent=self, default="yes",
+                icon='warning')
             if warning:
                 self.save()
             elif warning is None:
@@ -2981,9 +3043,10 @@ class CustomGameMaker(tk.Toplevel):
 
 
 class Combobox(tk.Frame):
-    def __init__(self, parent, values=[], frame_args={}, entry_args={}, label_args={}, listbox_args={}, replace_entry_with_label=True):
+    def __init__(self, parent, values=[], frame_args={}, entry_args={}, label_args={}, listbox_args={},
+                 replace_entry_with_label=True):
         tk.Frame.__init__(self, parent, **frame_args)
-        
+
         self.parent = parent
         self.values = values
         self.listbox_args = listbox_args
@@ -2992,9 +3055,9 @@ class Combobox(tk.Frame):
         self.box_opened = 0
         self.pack_propagate(0)
         self.label_image = tk.PhotoImage(
-            file=(os.path.dirname(os.path.abspath(__file__))+"/resources/arrow.png"))
+            file=(os.path.dirname(os.path.abspath(__file__)) + "/resources/arrow.png"))
         self.other_label_image = tk.PhotoImage(
-            file=(os.path.dirname(os.path.abspath(__file__))+"/resources/arrow_up.png"))
+            file=(os.path.dirname(os.path.abspath(__file__)) + "/resources/arrow_up.png"))
         try:
             self.textvariable = entry_args["textvariable"]
         except:
@@ -3028,9 +3091,9 @@ class Combobox(tk.Frame):
                 except:
                     color = "white"
             label.bind("<Enter>", lambda event,
-                       color=activecolor: self.label_hover(event, color))
+                                         color=activecolor: self.label_hover(event, color))
             label.bind("<Leave>", lambda event,
-                       color=color: self.label_hover(event, color))
+                                         color=color: self.label_hover(event, color))
         except:
             pass
 
@@ -3051,7 +3114,7 @@ class Combobox(tk.Frame):
         divider.bind("<Leave>", self.off_self, "+")
 
         if os.name != "nt":
-           self.parent.bind("<Button-1>", self.focusout, "+")
+            self.parent.bind("<Button-1>", self.focusout, "+")
 
     def on_self(self, event):
         self.mouse_on_self = True
@@ -3163,7 +3226,7 @@ class Settings(tk.Toplevel):
 
         try:
             self.settings = settings = json.load(open(os.path.dirname(
-                os.path.abspath(__file__))+"/resources/settings.json"))
+                os.path.abspath(__file__)) + "/resources/settings.json"))
             movetype = settings["movetype"]
             gamemode = settings["gamemode"]
             if gamemode[0] == "Custom":
@@ -3180,12 +3243,12 @@ class Settings(tk.Toplevel):
             canvas_color = settings["canvas_color"]
             larger_cards = settings["larger_cards"]
         except:
-            with open((os.path.dirname(os.path.abspath(__file__))+"/resources/settings.json"), "w") as handle:
+            with open((os.path.dirname(os.path.abspath(__file__)) + "/resources/settings.json"), "w") as handle:
                 handle.write(str(DEFAULT_SETTINGS).replace("'", '"'))
             self.settings = settings = json.load(open(os.path.dirname(
-                os.path.abspath(__file__))+"/resources/settings.json"))
+                os.path.abspath(__file__)) + "/resources/settings.json"))
             settings = json.load(open(os.path.dirname(
-                os.path.abspath(__file__))+"/resources/settings.json"))
+                os.path.abspath(__file__)) + "/resources/settings.json"))
             movetype = settings["movetype"]
             gamemode = settings["gamemode"]
             canvas_default_item_hover_time = int(
@@ -3234,18 +3297,24 @@ class Settings(tk.Toplevel):
         style.configure("TScale", background="#b0acac")
         self.intro_label = tk.Label(self, text="TkSolitaire Settings", font=(
             "Calibri", 10, "normal"), bg="#b0acac", fg="grey")
-        self.movetype_chooser = Combobox(self, self.movetype_chooser_options, {"height": 21, "width": 200, "bg": "#cccaca", "highlightbackground": "black", "highlightthickness": 1},
+        self.movetype_chooser = Combobox(self, self.movetype_chooser_options,
+                                         {"height": 21, "width": 200, "bg": "#cccaca", "highlightbackground": "black",
+                                          "highlightthickness": 1},
                                          {"textvariable": self.movetype_chooser_var, "anchor": "w",
-                                             "padx": 2, "background": "#cccaca", "cursor": "arrow"},
+                                          "padx": 2, "background": "#cccaca", "cursor": "arrow"},
                                          {"width": 10, "relief": "flat",
                                           "activebackground": "#b0b2bf", "bg": "#cccaca"},
-                                         {"relief": "flat", "highlightbackground": "black", "highlightthickness": 1, "bg": "#d4d2d2"})
-        self.gametype_chooser = Combobox(self, self.gametype_chooser_options, {"height": 21, "width": 200, "bg": "#cccaca", "highlightbackground": "black", "highlightthickness": 1},
+                                         {"relief": "flat", "highlightbackground": "black", "highlightthickness": 1,
+                                          "bg": "#d4d2d2"})
+        self.gametype_chooser = Combobox(self, self.gametype_chooser_options,
+                                         {"height": 21, "width": 200, "bg": "#cccaca", "highlightbackground": "black",
+                                          "highlightthickness": 1},
                                          {"textvariable": self.gametype_chooser_var, "anchor": "w",
-                                             "padx": 2, "background": "#cccaca", "cursor": "arrow"},
+                                          "padx": 2, "background": "#cccaca", "cursor": "arrow"},
                                          {"width": 10, "relief": "flat",
                                           "activebackground": "#b0b2bf", "bg": "#cccaca"},
-                                         {"relief": "flat", "highlightbackground": "black", "highlightthickness": 1, "bg": "#d4d2d2"})
+                                         {"relief": "flat", "highlightbackground": "black", "highlightthickness": 1,
+                                          "bg": "#d4d2d2"})
         self.movetype_label = tk.Label(self,
                                        text="Move Type:", bg="#b0acac", fg="black")
         self.gametype_label = tk.Label(self,
@@ -3255,34 +3324,52 @@ class Settings(tk.Toplevel):
                                          value=self.hovertime_scale_var.get(), command=self.hovertime_scale_change)
         self.cardsender_scale = ttk.Scale(self, from_=0, to=2000, variable=self.cardsender_scale_var,
                                           value=self.cardsender_scale_var.get(), command=self.cardsender_scale_change)
-        self.hovertime_entry = tk.Spinbox(self, from_=0, to=2000, increment=100, textvariable=self.hovertime_scale_var, relief="flat", highlightbackground="black",
-                                          highlightthickness=1, bg="#cccaca", buttonbackground="#cccacc", disabledbackground="#cccaca", disabledforeground="grey")
-        self.cardsender_entry = tk.Spinbox(self, from_=0, to=2000, increment=100, textvariable=self.cardsender_scale_var,
-                                           relief="flat",  highlightbackground="black", highlightthickness=1, bg="#cccaca", buttonbackground="#cccacc")
+        self.hovertime_entry = tk.Spinbox(self, from_=0, to=2000, increment=100, textvariable=self.hovertime_scale_var,
+                                          relief="flat", highlightbackground="black",
+                                          highlightthickness=1, bg="#cccaca", buttonbackground="#cccacc",
+                                          disabledbackground="#cccaca", disabledforeground="grey")
+        self.cardsender_entry = tk.Spinbox(self, from_=0, to=2000, increment=100,
+                                           textvariable=self.cardsender_scale_var,
+                                           relief="flat", highlightbackground="black", highlightthickness=1,
+                                           bg="#cccaca", buttonbackground="#cccacc")
         self.hover_after_label = tk.Label(self,
-                                          text="Auto click after:                 \n(Accessibility Mode only)", anchor="w", bg="#b0acac")
+                                          text="Auto click after:                 \n(Accessibility Mode only)",
+                                          anchor="w", bg="#b0acac")
         self.card_stack_hover_after_label = tk.Label(self,
                                                      text="Game solver wait time:", bg="#b0acac")
 
-        self.python_card_button = tk.Radiobutton(self, text="Python card", variable=self.card_back_var, highlightthickness=0,
-                                               value="python_card_back", anchor="w", bg="#b0acac", activebackground="#706c6c")
-        self.traditional_card_button = tk.Radiobutton(self, text="Classic card", variable=self.card_back_var, highlightthickness=0,
-                                                      value="card_back", anchor="w", bg="#b0acac", activebackground="#706c6c")
+        self.python_card_button = tk.Radiobutton(self, text="Python card", variable=self.card_back_var,
+                                                 highlightthickness=0,
+                                                 value="python_card_back", anchor="w", bg="#b0acac",
+                                                 activebackground="#706c6c")
+        self.traditional_card_button = tk.Radiobutton(self, text="Classic card", variable=self.card_back_var,
+                                                      highlightthickness=0,
+                                                      value="card_back", anchor="w", bg="#b0acac",
+                                                      activebackground="#706c6c")
         self.larger_cards_button = tk.Checkbutton(self, highlightthickness=0,
-                                                       text="Use larger cards   (will require game restart)", variable=self.larger_cards_button_var, anchor="w", bg="#b0acac", activebackground="#706c6c")
+                                                  text="Use larger cards   (will require game restart)",
+                                                  variable=self.larger_cards_button_var, anchor="w", bg="#b0acac",
+                                                  activebackground="#706c6c")
 
         self.color_entry_label = tk.Label(self,
                                           text="Canvas Background Color:", bg="#b0acac")
-        self.color_entry = tk.Entry(self, textvariable=self.canvas_color_var, state='disabled', relief="flat", highlightbackground="black", highlightthickness=1,
-                                    bg=self.canvas_color_var.get(), disabledbackground=self.canvas_color_var.get(), disabledforeground=self.generate_altered_colour(self.canvas_color_var.get()), cursor="arrow")
+        self.color_entry = tk.Entry(self, textvariable=self.canvas_color_var, state='disabled', relief="flat",
+                                    highlightbackground="black", highlightthickness=1,
+                                    bg=self.canvas_color_var.get(), disabledbackground=self.canvas_color_var.get(),
+                                    disabledforeground=self.generate_altered_colour(self.canvas_color_var.get()),
+                                    cursor="arrow")
 
         self.continuous_points_button = tk.Checkbutton(self, highlightthickness=0,
-                                                       text="Continuous Points (Vegas mode only)", variable=self.continuous_points_button_var, anchor="w", bg="#b0acac", activebackground="#706c6c")
+                                                       text="Continuous Points (Vegas mode only)",
+                                                       variable=self.continuous_points_button_var, anchor="w",
+                                                       bg="#b0acac", activebackground="#706c6c")
 
         self.header_button = tk.Checkbutton(self,
-                                            text="Show Header", variable=self.header_button_var, highlightthickness=0, anchor="w", bg="#b0acac", activebackground="#706c6c")
+                                            text="Show Header", variable=self.header_button_var, highlightthickness=0,
+                                            anchor="w", bg="#b0acac", activebackground="#706c6c")
         self.footer_button = tk.Checkbutton(self,
-                                            text="Show Footer", variable=self.footer_button_var, highlightthickness=0, anchor="w", bg="#b0acac", activebackground="#706c6c")
+                                            text="Show Footer", variable=self.footer_button_var, highlightthickness=0,
+                                            anchor="w", bg="#b0acac", activebackground="#706c6c")
         self.save_button = tk.Button(self, text="Save", relief="solid", borderwidth=1,
                                      command=self.save, bg="#b0acac", activebackground="#706c6c")
         self.reset_button = tk.Button(self, text="Reset", relief="solid", borderwidth=1,
@@ -3366,7 +3453,7 @@ class Settings(tk.Toplevel):
         self.movetype_chooser.grid(
             row=2, column=1, columnspan=3, padx=8, pady=7, sticky="ew")
         self.gametype_label.grid(
-            row=3, column=0, columnspan=2, padx=8, pady=7,  sticky="w")
+            row=3, column=0, columnspan=2, padx=8, pady=7, sticky="w")
         self.gametype_chooser.grid(
             row=3, column=1, columnspan=3, padx=8, pady=7, sticky="ew")
         ttk.Separator(self).grid(row=4, column=0, columnspan=4,
@@ -3379,7 +3466,7 @@ class Settings(tk.Toplevel):
             row=6, column=1, columnspan=2, padx=8, pady=7, sticky="ew")
         self.hovertime_entry.grid(row=6, column=3, padx=8, pady=7, sticky="ew")
         self.card_stack_hover_after_label.grid(
-            row=7, column=0, columnspan=2, padx=8, pady=7,  sticky="w")
+            row=7, column=0, columnspan=2, padx=8, pady=7, sticky="w")
         self.cardsender_scale.grid(
             row=7, column=1, columnspan=2, padx=8, pady=7, sticky="ew")
         self.cardsender_entry.grid(
@@ -3423,9 +3510,9 @@ class Settings(tk.Toplevel):
 
     def generate_altered_colour(self, color):
         rgb = list(self.hex_to_rgb(color))
-        rgb[0] = max(1, min(255, 240-rgb[0]))
-        rgb[1] = max(1, min(255, 240-rgb[1]))
-        rgb[2] = max(1, min(255, 240-rgb[2]))
+        rgb[0] = max(1, min(255, 240 - rgb[0]))
+        rgb[1] = max(1, min(255, 240 - rgb[1]))
+        rgb[2] = max(1, min(255, 240 - rgb[2]))
         return self.rgb_to_hex(*rgb)
 
     def hex_to_rgb(self, color):
@@ -3463,9 +3550,9 @@ class Settings(tk.Toplevel):
     def red_bg(self, widget):
         widget.config(bg="red")
         widget.bind("<Key>", lambda event,
-                    widget=widget: self.normal_bg(event, widget))
+                                    widget=widget: self.normal_bg(event, widget))
         widget.bind("<Button-1>", lambda event,
-                    widget=widget: self.normal_bg(event, widget))
+                                         widget=widget: self.normal_bg(event, widget))
 
     def normal_bg(self, event, widget):
         widget.config(bg="#cccaca")
@@ -3508,7 +3595,7 @@ class Settings(tk.Toplevel):
         settings["larger_cards"] = str(
             self.larger_cards_button_var.get())
         self.updated_settings = True
-        with open((os.path.dirname(os.path.abspath(__file__))+"/resources/settings.json"), "w") as handle:
+        with open((os.path.dirname(os.path.abspath(__file__)) + "/resources/settings.json"), "w") as handle:
             handle.write(str(settings).replace("'", '"'))
         self.event_generate("<<SettingsClose>>")
         self.destroy()
@@ -3605,7 +3692,7 @@ class Settings(tk.Toplevel):
                 empty_entries += 1
             if empty_entries > 0:
                 return
-            
+
             settings["show_footer"] = str(self.footer_button_var.get())
             settings["show_header"] = str(self.header_button_var.get())
             settings["continuous_points"] = str(
@@ -3616,9 +3703,10 @@ class Settings(tk.Toplevel):
                 self.larger_cards_button_var.get())
             if self.settings != settings:
                 save = messagebox.askyesnocancel(
-                    "Save Settings.", "You haven't saved your settings. Do you want to save them?", parent=self, default="yes", icon="warning")
+                    "Save Settings.", "You haven't saved your settings. Do you want to save them?", parent=self,
+                    default="yes", icon="warning")
                 if save:
-                    with open((os.path.dirname(os.path.abspath(__file__))+"/resources/settings.json"), "w") as handle:
+                    with open((os.path.dirname(os.path.abspath(__file__)) + "/resources/settings.json"), "w") as handle:
                         handle.write(str(settings).replace("'", '"'))
                 elif save is None:
                     return
@@ -3626,10 +3714,90 @@ class Settings(tk.Toplevel):
         self.destroy()
 
 
+def relative_to_assets(path: str) -> Path:
+    return ASSETS_PATH / Path(path)
+
+
+
+
+
 def main():
-    window = SolitareGameWindow()
+    window = Tk()
+    window.title("Ace-Arena")
+
+    window.geometry("1000x563")
+    window.configure(bg="#FFFFFF")
+
+    canvas = Canvas(
+        window,
+        bg="#FFFFFF",
+        height=563,
+        width=1000,
+        bd=0,
+        highlightthickness=0,
+        relief="ridge"
+    )
+
+    canvas.place(x=0, y=0)
+    image_image_1 = PhotoImage(
+        file=relative_to_assets("image_1.png"))
+    image_1 = canvas.create_image(
+        500.0,
+        281.0,
+        image=image_image_1
+    )
+
+    button_image_1 = PhotoImage(
+        file=relative_to_assets("button_1.png"))
+    button_1 = Button(
+        image=button_image_1,
+        borderwidth=0,
+        highlightthickness=0,
+        command=lambda: print("button_1 clicked"),
+        relief="flat"
+    )
+    button_1.place(
+        x=176.0,
+        y=308.0,
+        width=199.0,
+        height=56.0
+    )
+
+    button_image_2 = PhotoImage(
+        file=relative_to_assets("button_2.png"))
+    button_2 = Button(
+        image=button_image_2,
+        borderwidth=0,
+        highlightthickness=0,
+        command=window.destroy,
+        relief="flat"
+    )
+    button_2.place(
+        x=183.0,
+        y=415.0,
+        width=184.0,
+        height=56.0
+    )
+
+    button_image_3 = PhotoImage(
+        file=relative_to_assets("button_3.png"))
+    button_3 = Button(
+        image=button_image_3,
+        borderwidth=0,
+        highlightthickness=0,
+        command=SolitareGameWindow,
+        relief="flat"
+    )
+    button_3.place(
+        x=152.0,
+        y=201.0,
+        width=247.0,
+        height=56.0
+    )
+    window.resizable(False, False)
     window.mainloop()
 
 
 if __name__ == "__main__":
     main()
+

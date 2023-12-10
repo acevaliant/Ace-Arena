@@ -1,5 +1,5 @@
 from pathlib import Path
-from game_window import SolitareGameWindow
+from game_window import SolitareGameWindow, main
 # from tkinter import *
 import os
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
@@ -13,17 +13,17 @@ def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
 
-window = Tk()
-window.title("Ace-Arena")
-# Set the window icon
-window.iconbitmap(os.path.dirname(os.path.abspath(__file__)) + "/resources/icon.ico")
+root = Tk()
+root.title("Ace-Arena")
+# Set the root icon
+root.iconbitmap(os.path.dirname(os.path.abspath(__file__)) + "/resources/icon.ico")
 
-window.geometry("1000x563")
-window.configure(bg = "#FFFFFF")
+root.geometry("1000x563")
+root.configure(bg = "#FFFFFF")
 
 
 canvas = Canvas(
-    window,
+    root,
     bg = "#FFFFFF",
     height = 563,
     width = 1000,
@@ -33,8 +33,8 @@ canvas = Canvas(
 )
 
 def button_click():
-    window = SolitareGameWindow()
-    window.mainloop()
+    root.destroy()
+    main()
 
 canvas.place(x = 0, y = 0)
 image_image_1 = PhotoImage(
@@ -67,7 +67,7 @@ button_2 = Button(
     image=button_image_2,
     borderwidth=0,
     highlightthickness=0,
-    command=window.destroy,
+    command=root.destroy,
     relief="flat"
 )
 button_2.place(
@@ -92,6 +92,6 @@ button_3.place(
     width=247.0,
     height=56.0
 )
-window.resizable(False, False)
-window.mainloop()
+root.resizable(False, False)
+root.mainloop()
 

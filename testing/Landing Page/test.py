@@ -302,7 +302,7 @@ class SolitareGameWindow(tk.Tk):
         except:
             self.state("zoomed")
 
-        self.title("TkSolitaire")
+        self.title("Ace-Arena")
         self.minsize(1300, 500)
 
         solitaire_frame = SolitareGameFrame(self)
@@ -322,15 +322,15 @@ class SolitareGameFrame(tk.Frame):
         tk.Frame.__init__(self, parent, **kwargs)
 
         self.bind_all("<Control-n>", self.new_game)
-        self.bind_all("<Control-r>", self.restart_game)
+        #self.bind_all("<Control-r>", self.restart_game)
         self.bind_all("<Control-d>", lambda event: self.stack_onclick("deal_card_button"))
         self.bind_all("<Control-z>", self.undo_move)
         self.bind_all("<Control-Z>", self.redo_move)
-        self.bind_all("<Control-h>", self.generate_hint)
-        self.bind_all("<F5>", self.send_cards_up)
-        self.bind_all("<F1>", self.open_settings)
-        self.bind_all("<F11>", self.fullscreen)
-        self.bind("<Configure>", self.self_configure)
+        #self.bind_all("<Control-h>", self.generate_hint)
+        #self.bind_all("<F5>", self.send_cards_up)
+        #self.bind_all("<F1>", self.open_settings)
+        #self.bind_all("<F11>", self.fullscreen)
+        #self.bind("<Configure>", self.self_configure)
 
         self.canvas = tk.Canvas(self, bd=0, highlightthickness=0)
 
@@ -340,7 +340,7 @@ class SolitareGameFrame(tk.Frame):
         self.win_fullscreen = not parent.attributes("-fullscreen")
         self.card_moved_to_ace_by_sender = 0
         self.stock_left = 24
-        self.redeals_left = 0
+        self.redeals_left = 10
         self.larger_cards_pending = None
         self.last_active_card = ""
         self.card_stack_list = ""
@@ -465,8 +465,8 @@ class SolitareGameFrame(tk.Frame):
         header.columnconfigure(12, weight=1)
 
         new_game_button.grid(row=1, column=0, padx=6, pady=1)
-        if self.restart_game_button_enabled:
-            restart_game_button.grid(row=1, column=1, padx=6, pady=1)
+        #if self.restart_game_button_enabled:
+         #   restart_game_button.grid(row=1, column=1, padx=6, pady=1)
         header.add_buffer(width=4, row=1, column=2)
         deal_next_card_button.grid(row=1, column=3, padx=6, pady=1)
 
@@ -474,19 +474,19 @@ class SolitareGameFrame(tk.Frame):
 
         if self.undo_last_move_button_enabled:
             undo_last_move_button.grid(row=1, column=5, padx=6, pady=1)
-        if self.redo_last_move_button_enabled:
-            redo_last_move_button.grid(row=1, column=6, padx=6, pady=1)
+        #if self.redo_last_move_button_enabled:
+         #   redo_last_move_button.grid(row=1, column=6, padx=6, pady=1)
         header.add_buffer(width=3, row=1, column=7)
-        if self.hint_button_enabled:
-            hint_button.grid(row=1, column=8, padx=6, pady=1)
+        #if self.hint_button_enabled:
+         #   hint_button.grid(row=1, column=8, padx=6, pady=1)
 
-        send_cards_up_button.grid(row=1, column=9, padx=6, pady=1)
+        #send_cards_up_button.grid(row=1, column=9, padx=6, pady=1)
         header.add_buffer(width=4, row=1, column=10)
-        settings_button.grid(row=1, column=11, padx=6, pady=1)
-        fullscreen_button.grid(row=1, column=12, padx=16, pady=1, sticky="e")
+        #settings_button.grid(row=1, column=11, padx=6, pady=1)
+        #fullscreen_button.grid(row=1, column=12, padx=16, pady=1, sticky="e")
 
         self.headerless_settings_button = headerless_settings_button = HoverButton(self.canvas, movetype=self.movetype,
-                                                                                   alt="Settings", ttheightinvert=True, ttbackground="#1c1c1b",
+                                                                                   alt="Settings", ttheightinvert=True, ttbackground="#8ccc8d",
                                                                                    ttforeground="white", ttfont=("Verdana", "10", "normal"),
                                                                                    bg=self.canvas["bg"], activebackground=self.generate_altered_colour(
                                                                                        self.canvas["bg"]),
@@ -1174,7 +1174,7 @@ class SolitareGameFrame(tk.Frame):
         self.move_flag = False
         self.job = None
 
-        self.redeals_left = 0
+        self.redeals_left = 10
 
         self.canvas_item_hover_time = self.canvas_default_item_hover_time
 
@@ -3280,7 +3280,7 @@ class Settings(tk.Toplevel):
                                                        text="Continuous Points (Vegas mode only)", variable=self.continuous_points_button_var, anchor="w", bg="#b0acac", activebackground="#706c6c")
 
         self.header_button = tk.Checkbutton(self,
-                                            text="Show Header", variable=self.header_button_var, highlightthickness=0, anchor="w", bg="#b0acac", activebackground="#706c6c")
+                                            text="Show Header", variable=self.header_button_var, highlightthickness=0, anchor="w", bg="#b0acac", activebackground="#8ccc8d")
         self.footer_button = tk.Checkbutton(self,
                                             text="Show Footer", variable=self.footer_button_var, highlightthickness=0, anchor="w", bg="#b0acac", activebackground="#706c6c")
         self.save_button = tk.Button(self, text="Save", relief="solid", borderwidth=1,

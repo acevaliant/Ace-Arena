@@ -1,5 +1,5 @@
 from pathlib import Path
-
+from game_window import SolitareGameWindow
 # from tkinter import *
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
@@ -28,6 +28,10 @@ canvas = Canvas(
     highlightthickness = 0,
     relief = "ridge"
 )
+
+def button_click():
+    window = SolitareGameWindow()
+    window.mainloop()
 
 canvas.place(x = 0, y = 0)
 image_image_1 = PhotoImage(
@@ -76,7 +80,7 @@ button_3 = Button(
     image=button_image_3,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_3 clicked"),
+    command=button_click,
     relief="flat"
 )
 button_3.place(

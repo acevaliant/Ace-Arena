@@ -1,12 +1,12 @@
 from pathlib import Path
-from game_window import SolitareGameWindow
+#from game_window import SolitareGameWindow
 # from tkinter import *
-import os
+import  os
 from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
 
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"E:\College\2. Second Year\SEM 3\2. Labs\CS261\Project\Ace-Arena\testing\Landing Page\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"E:\College\2. Second Year\SEM 3\2. Labs\CS261\Project\Ace-Arena\assets\frame0")
 
 
 def relative_to_assets(path: str) -> Path:
@@ -15,7 +15,6 @@ def relative_to_assets(path: str) -> Path:
 
 window = Tk()
 window.title("Ace-Arena")
-# Set the window icon
 window.iconbitmap(os.path.dirname(os.path.abspath(__file__)) + "/resources/icon.ico")
 
 window.geometry("1000x563")
@@ -33,8 +32,9 @@ canvas = Canvas(
 )
 
 def button_click():
-    window = SolitareGameWindow()
-    window.mainloop()
+    print("hello")
+    #window = SolitareGameWindow()
+    #window.mainloop()
 
 canvas.place(x = 0, y = 0)
 image_image_1 = PhotoImage(

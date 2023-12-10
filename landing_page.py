@@ -1,9 +1,7 @@
 from pathlib import Path
 from game_window import main
-# from tkinter import *
-import  os
-from tkinter import Tk, Canvas, Entry, Text, Button, PhotoImage
-
+import os
+from tkinter import *
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"E:\College\2. Second Year\SEM 3\2. Labs\CS261\Project\Ace-Arena\assets\frame0")
@@ -18,7 +16,7 @@ root.title("Ace-Arena")
 root.iconbitmap(os.path.dirname(os.path.abspath(__file__)) + "/resources/icon.ico")
 
 root.geometry("1000x563")
-root.configure(bg = "#FFFFFF")
+root.configure(bg="#FFFFFF")
 
 
 canvas = Canvas(
@@ -35,6 +33,34 @@ def button_click():
     root.destroy()
     main()
 
+def rules():
+    new = Toplevel()
+    new.title("Ace-Arena")
+    new.iconbitmap(os.path.dirname(os.path.abspath(__file__)) + "/resources/icon.ico")
+
+    new.geometry("1500x844")
+    new.configure(bg="#FFFFFF")
+    canvas = Canvas(
+        new,
+        bg="#FFFFFF",
+        height=844,
+        width=1500,
+        bd=0,
+        highlightthickness=0,
+        relief="ridge"
+    )
+    canvas.place(x=0, y=0)
+    image_image = PhotoImage(
+        file=relative_to_assets("image_2.png"))
+    image = canvas.create_image(
+        750.0,
+        422.0,
+        image=image_image
+    )
+
+    new.resizable(False, False)
+    new.mainloop()
+
 canvas.place(x = 0, y = 0)
 image_image_1 = PhotoImage(
     file=relative_to_assets("image_1.png"))
@@ -50,7 +76,7 @@ button_1 = Button(
     image=button_image_1,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_1 clicked"),
+    command=rules,
     relief="flat"
 )
 button_1.place(

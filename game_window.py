@@ -37,6 +37,7 @@ class SolitareGameWindow(tk.Tk):
         self.title("Ace-Arena")
         self.minsize(1370, 720)
         self.maxsize(1370, 720)
+        self.resizable(False, False)
 
         solitaire_frame = SolitareGameFrame(self)
         solitaire_frame.pack(expand=True, fill="both")

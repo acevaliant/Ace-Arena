@@ -1,5 +1,5 @@
 from hover_button import HoverButton
-from options import  OptionBar
+from options import OptionBar
 from Settings import Settings
 from StopWatch import Stopwatch
 

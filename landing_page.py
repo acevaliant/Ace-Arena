@@ -3,13 +3,6 @@ from game_window import main
 import os
 from tkinter import *
 
-OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"E:\College\2. Second Year\SEM 3\2. Labs\CS261\Project\Ace-Arena\assets\frame0")
-
-
-def relative_to_assets(path: str) -> Path:
-    return ASSETS_PATH / Path(path)
-
 
 root = Tk()
 root.title("Ace-Arena")
@@ -50,8 +43,7 @@ def rules():
         relief="ridge"
     )
     canvas.place(x=0, y=0)
-    image_image = PhotoImage(
-        file=relative_to_assets("image_2.png"))
+    image_image = PhotoImage(file=os.path.dirname(os.path.abspath(__file__)) + "/assets/frame0/image_2.png")
     image = canvas.create_image(
         750.0,
         422.0,
@@ -62,16 +54,14 @@ def rules():
     new.mainloop()
 
 canvas.place(x = 0, y = 0)
-image_image_1 = PhotoImage(
-    file=relative_to_assets("image_1.png"))
+image_image_1 = PhotoImage(file=os.path.dirname(os.path.abspath(__file__)) + "/assets/frame0/image_1.png")
 image_1 = canvas.create_image(
     500.0,
     281.0,
     image=image_image_1
 )
 
-button_image_1 = PhotoImage(
-    file=relative_to_assets("button_1.png"))
+button_image_1 = PhotoImage(file=os.path.dirname(os.path.abspath(__file__)) + "/assets/frame0/button_1.png")
 button_1 = Button(
     image=button_image_1,
     borderwidth=0,
@@ -86,8 +76,7 @@ button_1.place(
     height=56.0
 )
 
-button_image_2 = PhotoImage(
-    file=relative_to_assets("button_2.png"))
+button_image_2 = PhotoImage(file=os.path.dirname(os.path.abspath(__file__)) + "/assets/frame0/button_2.png")
 button_2 = Button(
     image=button_image_2,
     borderwidth=0,
@@ -102,8 +91,7 @@ button_2.place(
     height=56.0
 )
 
-button_image_3 = PhotoImage(
-    file=relative_to_assets("button_3.png"))
+button_image_3 = PhotoImage(file=os.path.dirname(os.path.abspath(__file__)) + "/assets/frame0/button_3.png")
 button_3 = Button(
     image=button_image_3,
     borderwidth=0,

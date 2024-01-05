@@ -1,4 +1,3 @@
-from pathlib import Path
 from game_window import main
 import os
 from tkinter import *
